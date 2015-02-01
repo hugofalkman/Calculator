@@ -19,7 +19,9 @@ class ViewController: UIViewController {
     @IBAction func appendDigit(sender: UIButton) {
         let digit = sender.currentTitle!
         if userIsTyping {
+            if digit != "." || nil == display.text?.rangeOfString(".") {
             display.text = display.text! + digit
+            }
         } else {
             display.text = digit
             userIsTyping = true
