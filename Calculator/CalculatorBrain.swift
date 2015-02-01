@@ -38,9 +38,7 @@ class CalculatorBrain {
         func learnOp(op: Op) {
             knownOps[op.description] = op
         }
-        func pi() -> Double {
-            return M_PI
-        }
+        
         learnOp(Op.BinaryOperation("×",*))
         learnOp(Op.BinaryOperation("÷") {$1 / $0})
         learnOp(Op.BinaryOperation("+",+))
@@ -48,7 +46,7 @@ class CalculatorBrain {
         learnOp(Op.UnaryOperation("√",sqrt))
         learnOp(Op.UnaryOperation("sin",sin))
         learnOp(Op.UnaryOperation("cos",cos))
-        learnOp(Op.NoParmOperation("π",pi))
+        learnOp(Op.NoParmOperation("π") {M_PI})
     }
     
     private func evaluate(ops: [Op]) -> (result: Double?, remainingOps: [Op]) {
