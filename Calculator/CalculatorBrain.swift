@@ -43,9 +43,11 @@ class CalculatorBrain {
         learnOp(Op.BinaryOperation("÷") {$1 / $0})
         learnOp(Op.BinaryOperation("+",+))
         learnOp(Op.BinaryOperation("−") {$1 - $0})
+        learnOp(Op.BinaryOperation("xʸ") {pow($1, $0)})
         learnOp(Op.UnaryOperation("√",sqrt))
         learnOp(Op.UnaryOperation("sin",sin))
         learnOp(Op.UnaryOperation("cos",cos))
+        learnOp(Op.UnaryOperation("1/x") {1.0 / $0})
         learnOp(Op.NullaryOperation("π") {M_PI})
     }
     
