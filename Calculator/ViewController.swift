@@ -30,22 +30,6 @@ class ViewController: UIViewController {
     }
     
     @IBAction func operate(sender: UIButton) {
-        
-        // treat +⁄- while typing case separate and return
-        if sender.currentTitle == "+⁄-" &&
-            (userIsTyping || display.text == "0") {
-            if displayValue < 0 {
-                display.text = dropFirst(display.text!)
-            } else if userIsTyping {
-                display.text = "-" + display.text!
-            } else {
-                // case when typing starts with +⁄-
-                display.text = "-"
-                userIsTyping = true
-            }
-            return
-        }
-        
         if userIsTyping {
             enter()
         }
@@ -55,6 +39,24 @@ class ViewController: UIViewController {
             } else {
                 displayValue = 0
             }
+        }
+    }
+    
+    @IBAction func sign(sender: UIButton) {
+        // first address the +⁄- while typing case
+        if userIsTyping {
+            if display.text!.hasPrefix("-") {
+                display.text = dropFirst(display.text!)
+            } else {
+                display.text = "-" + display.text!
+            }
+        } else if display.text == "0" {
+            // case when typing starts with the +⁄- key
+            display.text = "-"
+            userIsTyping = true
+        } else {
+            // if not typing treat like any other operator
+            operate(sender)
         }
     }
 
