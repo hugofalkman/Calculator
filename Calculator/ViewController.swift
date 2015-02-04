@@ -19,6 +19,7 @@ class ViewController: UIViewController {
     @IBAction func appendDigit(sender: UIButton) {
         let digit = sender.currentTitle!
         if userIsTyping {
+            // skip if second dot entered, in all other cases execute
             if digit != "." || nil == display.text?.rangeOfString(".") {
             display.text = display.text! + digit
             }
@@ -29,7 +30,22 @@ class ViewController: UIViewController {
     }
     
     @IBAction func operate(sender: UIButton) {
-        let operation = sender.currentTitle!
+        
+        // treat +⁄- while typing case separate and return
+        if sender.currentTitle == "+⁄-" &&
+            (userIsTyping || display.text == "0") {
+            if displayValue < 0 {
+                display.text = dropFirst(display.text!)
+            } else if userIsTyping {
+                display.text = "-" + display.text!
+            } else {
+                // case when typing starts with +⁄-
+                display.text = "-"
+                userIsTyping = true
+            }
+            return
+        }
+        
         if userIsTyping {
             enter()
         }
@@ -42,6 +58,26 @@ class ViewController: UIViewController {
         }
     }
 
+    @IBAction func clear() {
+        display.text = "0"
+        userIsTyping = false
+        brain = CalculatorBrain()
+    }
+    
+    @IBAction func backspace() {
+        if userIsTyping {
+            display.text = dropLast(display.text!)
+            if countElements(display.text!) == 0 {
+                userIsTyping = false
+                if let result = brain.evaluate() {
+                    displayValue = result
+                } else {
+                    displayValue = 0
+                }
+            }
+        }
+    }
+    
     @IBAction func enter() {
         userIsTyping = false
         if let result = brain.pushOperand(displayValue) {
@@ -50,7 +86,8 @@ class ViewController: UIViewController {
             displayValue = 0
         }
     }
-    
+
+    // computed value for UILabel display.text
     var displayValue: Double {
         get {
             return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
