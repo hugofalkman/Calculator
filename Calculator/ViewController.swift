@@ -38,7 +38,7 @@ class ViewController: UIViewController {
             if let result = brain.performOperation(operation){
                 displayValue = result
             } else {
-                displayValue = 0
+                displayValue = nil
             }
         }
     }
@@ -75,7 +75,7 @@ class ViewController: UIViewController {
                 if let result = brain.evaluate() {
                     displayValue = result
                 } else {
-                    displayValue = 0
+                    displayValue = nil
                 }
             }
         }
@@ -83,20 +83,30 @@ class ViewController: UIViewController {
     
     @IBAction func enter() {
         userIsTyping = false
-        if let result = brain.pushOperand(displayValue) {
+        if let result = brain.pushOperand(displayValue!) {
             displayValue = result
         } else {
-            displayValue = 0
+            displayValue = nil
         }
     }
 
     // computed value for UILabel display.text
-    var displayValue: Double {
+    var displayValue: Double? {
         get {
-            return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
+            // nsNumber is nil if display.text does not containt number
+            let nsNumber = NSNumberFormatter().numberFromString(display.text!)
+            if let actualNSNumber = nsNumber {
+                return actualNSNumber.doubleValue
+            } else {
+            return nil
+            }
         }
         set {
-            display.text = "\(newValue)"
+            if let actualNewValue = newValue {
+                display.text = "\(actualNewValue)"
+            } else {
+                display.text = " "
+            }
             userIsTyping = false
         }
     }
