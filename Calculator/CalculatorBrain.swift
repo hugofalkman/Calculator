@@ -43,13 +43,21 @@ class CalculatorBrain {
         learnOp(Op.BinaryOperation("÷") {$1 / $0})
         learnOp(Op.BinaryOperation("+",+))
         learnOp(Op.BinaryOperation("−") {$1 - $0})
-        learnOp(Op.BinaryOperation("xʸ") {pow($1, $0)})
+        learnOp(Op.BinaryOperation("⋆") {pow($1, $0)})
         learnOp(Op.UnaryOperation("√",sqrt))
         learnOp(Op.UnaryOperation("sin",sin))
         learnOp(Op.UnaryOperation("cos",cos))
-        learnOp(Op.UnaryOperation("1⁄x") {1.0 / $0})
+        learnOp(Op.UnaryOperation("tan",tan))
+        learnOp(Op.UnaryOperation("asin",asin))
+        learnOp(Op.UnaryOperation("acos",acos))
+        learnOp(Op.UnaryOperation("atan",atan))
+        learnOp(Op.UnaryOperation("exp",exp))
+        learnOp(Op.UnaryOperation("ln",log))
+        learnOp(Op.UnaryOperation("2log",log2))
+        learnOp(Op.UnaryOperation("1⁄") {1.0 / $0})
         learnOp(Op.UnaryOperation("+⁄-") {-$0})
         learnOp(Op.NullaryOperation("π") {M_PI})
+        learnOp(Op.NullaryOperation("e") {M_E})
     }
     
     private func evaluate(ops: [Op]) -> (result: Double?, remainingOps: [Op]) {
