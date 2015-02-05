@@ -35,11 +35,7 @@ class ViewController: UIViewController {
             enter()
         }
         if let operation = sender.currentTitle {
-            if let result = brain.performOperation(operation){
-                displayValue = result
-            } else {
-                displayValue = nil
-            }
+            displayValue = brain.performOperation(operation)
         }
     }
     
@@ -63,6 +59,7 @@ class ViewController: UIViewController {
 
     @IBAction func clear() {
         display.text = "0"
+        stackDisplay.text = " "
         userIsTyping = false
         brain = CalculatorBrain()
     }
@@ -72,22 +69,25 @@ class ViewController: UIViewController {
             display.text = dropLast(display.text!)
             if countElements(display.text!) == 0 {
                 userIsTyping = false
-                if let result = brain.evaluate() {
-                    displayValue = result
-                } else {
-                    displayValue = nil
-                }
+                displayValue = brain.evaluate()
             }
         }
     }
     
+    @IBAction func setM() {
+        userIsTyping = false
+        brain.variableValues["M"] = displayValue
+        displayValue = brain.evaluate()
+    }
+    
+    @IBAction func pushM() {
+        userIsTyping = false
+        displayValue = brain.pushOperand("M")
+    }
+    
     @IBAction func enter() {
         userIsTyping = false
-        if let result = brain.pushOperand(displayValue!) {
-            displayValue = result
-        } else {
-            displayValue = nil
-        }
+        displayValue = brain.pushOperand(displayValue!)
     }
 
     // computed value for UILabel display.text
