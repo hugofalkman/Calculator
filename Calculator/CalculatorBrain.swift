@@ -37,10 +37,24 @@ class CalculatorBrain {
     
     private var knownOps = [String: Op]()
     
-    //  property public to allow setting of variables
+    //  public property to allow setting of variables
     var variableValues = [String: Double]()
+
+    // description of opStack passed to UI by the View Controller
+    // computed read only property (get only)
+    var description: String {
+        var remainder = opStack
+        var result = ""
+        while !remainder.isEmpty {
+            let opDescribe = describe(remainder)
+            let op = opDescribe.result ?? "?"
+            result = " " + op + "," + result
+            remainder = opDescribe.remainingOps
+        }
+        return dropFirst(dropLast(result)) + " ="
+    }
     
-    init() {
+        init() {
         func learnOp(op: Op) {
             knownOps[op.description] = op
         }
@@ -49,7 +63,7 @@ class CalculatorBrain {
         learnOp(Op.BinaryOperation("÷") {$1 / $0})
         learnOp(Op.BinaryOperation("+",+))
         learnOp(Op.BinaryOperation("−") {$1 - $0})
-        learnOp(Op.BinaryOperation("⋆") {pow($1, $0)})
+        learnOp(Op.BinaryOperation("^") {pow($1, $0)})
         learnOp(Op.UnaryOperation("√",sqrt))
         learnOp(Op.UnaryOperation("sin",sin))
         learnOp(Op.UnaryOperation("cos",cos))
@@ -60,12 +74,37 @@ class CalculatorBrain {
         learnOp(Op.UnaryOperation("exp",exp))
         learnOp(Op.UnaryOperation("ln",log))
         learnOp(Op.UnaryOperation("2log",log2))
-        learnOp(Op.UnaryOperation("1⁄") {1.0 / $0})
+        learnOp(Op.UnaryOperation("1÷") {1.0 / $0})
         learnOp(Op.UnaryOperation("+⁄-") {-$0})
         learnOp(Op.NullaryOperation("π") {M_PI})
         learnOp(Op.NullaryOperation("e") {M_E})
     }
     
+    // recursive helper function for public computed property "description"
+    private func describe(ops: [Op]) -> (result: String?, remainingOps: [Op]) {
+        if !ops.isEmpty {
+            var remainingOps = ops
+            let op = remainingOps.removeLast()
+            switch op {
+            case .UnaryOperation(let symbol, _):
+                let opDescribe = describe(remainingOps)
+                let operand = opDescribe.result ?? "?"
+                return (symbol + "(" + operand + ")", opDescribe.remainingOps)
+            case .BinaryOperation(let symbol, _):
+                let op1Describe = describe(remainingOps)
+                let operand1 = op1Describe.result ?? "?"
+                let op2Describe = describe(op1Describe.remainingOps)
+                let operand2 = op2Describe.result ?? "?"
+                return ("(" + operand2 + symbol + operand1 + ")", op2Describe.remainingOps)
+            default:
+                return (op.description, remainingOps)
+            }
+        } else {
+            return (nil, ops)
+        }
+    }
+    
+    // recursive helper function for public evaluate method below
     private func evaluate(ops: [Op]) -> (result: Double?, remainingOps: [Op]) {
         
         if !ops.isEmpty {
@@ -98,7 +137,8 @@ class CalculatorBrain {
     
     func evaluate() -> Double? {
         let (result, remainder) = evaluate(opStack)
-        println("\(opStack) = \(result) with \(remainder) left over")
+        // println("\(opStack) = \(result) with \(remainder) left over")
+        println(description)
         return result
     }
     

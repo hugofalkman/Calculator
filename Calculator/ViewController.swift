@@ -93,7 +93,7 @@ class ViewController: UIViewController {
     // computed value for UILabel display.text
     var displayValue: Double? {
         get {
-            // nsNumber is nil if display.text does not containt number
+            // nsNumber is nil if display.text does not contain number
             let nsNumber = NSNumberFormatter().numberFromString(display.text!)
             if let actualNSNumber = nsNumber {
                 return actualNSNumber.doubleValue
@@ -108,6 +108,7 @@ class ViewController: UIViewController {
                 display.text = " "
             }
             userIsTyping = false
+            stackDisplay.text = brain.description
         }
     }
 }
