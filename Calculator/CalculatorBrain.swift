@@ -51,7 +51,11 @@ class CalculatorBrain {
             result = " " + op + "," + result
             remainder = opDescribe.remainingOps
         }
-        return dropFirst(dropLast(result)) + " ="
+        if result == "" {
+            return result
+        } else {
+            return dropFirst(dropLast(result)) + " ="
+        }
     }
     
         init() {
