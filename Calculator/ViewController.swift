@@ -93,8 +93,11 @@ class ViewController: UIViewController {
     // computed value for UILabel display.text
     var displayValue: Double? {
         get {
+            // set formatter to use US format (dot not comma)
+            var formatter = NSNumberFormatter()
+            formatter.locale = NSLocale(localeIdentifier:  "en_US")
             // nsNumber is nil if display.text does not contain number
-            let nsNumber = NSNumberFormatter().numberFromString(display.text!)
+            let nsNumber = formatter.numberFromString(display.text!)
             if let actualNSNumber = nsNumber {
                 return actualNSNumber.doubleValue
             } else {

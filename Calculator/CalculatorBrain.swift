@@ -16,7 +16,8 @@ class CalculatorBrain {
         case NullaryOperation(String, () -> Double)
         case UnaryOperation(String, Double -> Double)
         case BinaryOperation(String, (Double, Double) -> Double)
-        
+       
+        // computed property describing the Op enum cases
         var description: String {
             switch self {
             case .Operand(let operand):
@@ -29,6 +30,22 @@ class CalculatorBrain {
                 return symbol
             case .BinaryOperation(let symbol, _):
                 return symbol
+            }
+        }
+        
+        // computed property setting order of predecence for binary operations
+        var opOrder: Int {
+            switch self {
+            case .BinaryOperation(let symbol, _):
+                if symbol == "^" {
+                    return 3
+                } else if symbol == "×" || symbol == "÷" {
+                    return 2
+                } else {
+                    return 1
+                }
+            default:
+                return Int.max
             }
         }
     }
@@ -78,33 +95,49 @@ class CalculatorBrain {
         learnOp(Op.UnaryOperation("exp",exp))
         learnOp(Op.UnaryOperation("ln",log))
         learnOp(Op.UnaryOperation("2log",log2))
-        learnOp(Op.UnaryOperation("1÷") {1.0 / $0})
+        learnOp(Op.UnaryOperation("inv") {1.0 / $0})
         learnOp(Op.UnaryOperation("+⁄-") {-$0})
         learnOp(Op.NullaryOperation("π") {M_PI})
         learnOp(Op.NullaryOperation("e") {M_E})
     }
     
     // recursive helper function for public computed property "description"
-    private func describe(ops: [Op]) -> (result: String?, remainingOps: [Op]) {
+    private func describe(ops: [Op]) -> (result: String?, prec: Int?, remainingOps: [Op]) {
         if !ops.isEmpty {
             var remainingOps = ops
             let op = remainingOps.removeLast()
+            let prec = op.opOrder
+            let opDesc = op.description
+            
             switch op {
-            case .UnaryOperation(let symbol, _):
-                let opDescribe = describe(remainingOps)
-                let operand = opDescribe.result ?? "?"
-                return (symbol + "(" + operand + ")", opDescribe.remainingOps)
-            case .BinaryOperation(let symbol, _):
-                let op1Describe = describe(remainingOps)
-                let operand1 = op1Describe.result ?? "?"
-                let op2Describe = describe(op1Describe.remainingOps)
-                let operand2 = op2Describe.result ?? "?"
-                return ("(" + operand2 + symbol + operand1 + ")", op2Describe.remainingOps)
+            case .UnaryOperation:
+                let op1Desc = describe(remainingOps)
+                let operand1 = op1Desc.result ?? "?"
+                return (opDesc + "(" + operand1 + ")", prec, op1Desc.remainingOps)
+                
+            case .BinaryOperation:
+                let op1Desc = describe(remainingOps)
+                var operand1 = op1Desc.result ?? "?"
+                let prec1 = op1Desc.prec ?? Int.max
+                if prec1 < prec {
+                    operand1 = "(" + operand1 + ")"
+                }
+                
+                let op2Desc = describe(op1Desc.remainingOps)
+                var operand2 = op2Desc.result ?? "?"
+                let prec2 = op2Desc.prec ?? Int.max
+                if prec2 < prec {
+                    operand2 = "(" + operand2 + ")"
+                }
+                
+                return (operand2 + opDesc + operand1, prec, op2Desc.remainingOps)
+                
             default:
-                return (op.description, remainingOps)
+                return (opDesc, prec, remainingOps)
             }
+            
         } else {
-            return (nil, ops)
+            return (nil, nil, ops)
         }
     }
     
@@ -142,7 +175,7 @@ class CalculatorBrain {
     func evaluate() -> Double? {
         let (result, remainder) = evaluate(opStack)
         // println("\(opStack) = \(result) with \(remainder) left over")
-        println(description)
+        // println(description)
         return result
     }
     
