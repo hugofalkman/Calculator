@@ -195,5 +195,12 @@ class CalculatorBrain {
         }
         return evaluate()
     }
+    
+    func popStack() -> Double? {
+        if !opStack.isEmpty {
+            opStack.removeLast()
+        }
+        return evaluate()
+    }
 }
 

@@ -71,6 +71,8 @@ class ViewController: UIViewController {
                 userIsTyping = false
                 displayValue = brain.evaluate()
             }
+        } else {
+            displayValue = brain.popStack()
         }
     }
     
@@ -107,11 +109,12 @@ class ViewController: UIViewController {
         set {
             if let actualNewValue = newValue {
                 display.text = "\(actualNewValue)"
+                stackDisplay.text = brain.description
             } else {
                 display.text = " "
+                stackDisplay.text = " "
             }
             userIsTyping = false
-            stackDisplay.text = brain.description
         }
     }
 }
