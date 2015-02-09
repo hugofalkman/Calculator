@@ -14,8 +14,10 @@ class CalculatorBrain {
         case Operand(Double)
         case Variable(String)
         case NullaryOperation(String, () -> Double)
+        // last parameter for unary and binary is the error test function
         case UnaryOperation(String, Double -> Double)
-        case BinaryOperation(String, (Double, Double) -> Double)
+        // third parameter for binary is order of precedence
+        case BinaryOperation(String, (Double, Double) -> Double, Int)
        
         // computed property describing the Op enum cases
         var description: String {
@@ -28,7 +30,7 @@ class CalculatorBrain {
                 return symbol
             case .UnaryOperation(let symbol, _):
                 return symbol
-            case .BinaryOperation(let symbol, _):
+            case .BinaryOperation(let symbol, _, _):
                 return symbol
             }
         }
@@ -36,14 +38,8 @@ class CalculatorBrain {
         // computed property setting order of predecence for binary operations
         var opOrder: Int {
             switch self {
-            case .BinaryOperation(let symbol, _):
-                if symbol == "^" {
-                    return 3
-                } else if symbol == "×" || symbol == "÷" {
-                    return 2
-                } else {
-                    return 1
-                }
+            case .BinaryOperation(_, _, let prec):
+                return prec
             default:
                 return Int.max
             }
@@ -80,11 +76,11 @@ class CalculatorBrain {
             knownOps[op.description] = op
         }
         
-        learnOp(Op.BinaryOperation("×",*))
-        learnOp(Op.BinaryOperation("÷") {$1 / $0})
-        learnOp(Op.BinaryOperation("+",+))
-        learnOp(Op.BinaryOperation("−") {$1 - $0})
-        learnOp(Op.BinaryOperation("^") {pow($1, $0)})
+        learnOp(Op.BinaryOperation("×", *, 2))
+        learnOp(Op.BinaryOperation("÷", {$1 / $0}, 2))
+        learnOp(Op.BinaryOperation("+", +, 1))
+        learnOp(Op.BinaryOperation("−", {$1 - $0}, 1))
+        learnOp(Op.BinaryOperation("^", {pow($1, $0)}, 3))
         learnOp(Op.UnaryOperation("√",sqrt))
         learnOp(Op.UnaryOperation("sin",sin))
         learnOp(Op.UnaryOperation("cos",cos))
@@ -159,7 +155,7 @@ class CalculatorBrain {
                 if let operand = operandEvaluation.result {
                     return (operation(operand), operandEvaluation.remainingOps)
                     }
-            case .BinaryOperation(_, let operation):
+            case .BinaryOperation(_, let operation, _):
                 let op1Evaluation = evaluate(remainingOps)
                 if let operand1 = op1Evaluation.result {
                     let op2Evaluation = evaluate(op1Evaluation.remainingOps)
