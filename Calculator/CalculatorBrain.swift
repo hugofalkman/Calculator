@@ -15,9 +15,9 @@ class CalculatorBrain {
         case Variable(String)
         case NullaryOperation(String, () -> Double)
         // last parameter for unary and binary is the error test function
-        case UnaryOperation(String, Double -> Double)
+        case UnaryOperation(String, Double -> Double, (Double -> String?)?)
         // third parameter for binary is order of precedence
-        case BinaryOperation(String, (Double, Double) -> Double, Int)
+        case BinaryOperation(String, (Double, Double) -> Double, Int, ((Double, Double) -> String?)?)
        
         // computed property describing the Op enum cases
         var description: String {
@@ -28,9 +28,9 @@ class CalculatorBrain {
                 return symbol
             case .NullaryOperation(let symbol, _):
                 return symbol
-            case .UnaryOperation(let symbol, _):
+            case .UnaryOperation(let symbol, _, _):
                 return symbol
-            case .BinaryOperation(let symbol, _, _):
+            case .BinaryOperation(let symbol, _, _, _):
                 return symbol
             }
         }
@@ -38,7 +38,7 @@ class CalculatorBrain {
         // computed property setting order of predecence for binary operations
         var opOrder: Int {
             switch self {
-            case .BinaryOperation(_, _, let prec):
+            case .BinaryOperation(_, _, let prec, _):
                 return prec
             default:
                 return Int.max
@@ -71,28 +71,42 @@ class CalculatorBrain {
         }
     }
     
-        init() {
+    init() {
         func learnOp(op: Op) {
             knownOps[op.description] = op
         }
         
-        learnOp(Op.BinaryOperation("×", *, 2))
-        learnOp(Op.BinaryOperation("÷", {$1 / $0}, 2))
-        learnOp(Op.BinaryOperation("+", +, 1))
-        learnOp(Op.BinaryOperation("−", {$1 - $0}, 1))
-        learnOp(Op.BinaryOperation("^", {pow($1, $0)}, 3))
-        learnOp(Op.UnaryOperation("√",sqrt))
-        learnOp(Op.UnaryOperation("sin",sin))
-        learnOp(Op.UnaryOperation("cos",cos))
-        learnOp(Op.UnaryOperation("tan",tan))
-        learnOp(Op.UnaryOperation("asin",asin))
-        learnOp(Op.UnaryOperation("acos",acos))
-        learnOp(Op.UnaryOperation("atan",atan))
-        learnOp(Op.UnaryOperation("exp",exp))
-        learnOp(Op.UnaryOperation("ln",log))
-        learnOp(Op.UnaryOperation("2log",log2))
-        learnOp(Op.UnaryOperation("inv") {1.0 / $0})
-        learnOp(Op.UnaryOperation("+⁄-") {-$0})
+        learnOp(Op.BinaryOperation("×", *, 2, nil))
+        learnOp(Op.BinaryOperation("÷", {$1 / $0}, 2) {
+            s0, s1 in
+            if s0 == 0.0 {
+                return "Error: Division by zero"
+            } else {
+                return nil
+            }
+                })
+        learnOp(Op.BinaryOperation("+", +, 1, nil))
+        learnOp(Op.BinaryOperation("−", {$1 - $0}, 1, nil))
+        learnOp(Op.BinaryOperation("^", {pow($1, $0)}, 3, nil))
+        learnOp(Op.UnaryOperation("√",sqrt) {
+            s0 in
+            if s0 < 0.0 {
+                return "Error: Sq. root of negative number"
+            } else {
+                return nil
+            }
+            })
+        learnOp(Op.UnaryOperation("sin",sin, nil))
+        learnOp(Op.UnaryOperation("cos",cos, nil))
+        learnOp(Op.UnaryOperation("tan",tan, nil))
+        learnOp(Op.UnaryOperation("asin",asin, nil))
+        learnOp(Op.UnaryOperation("acos",acos, nil))
+        learnOp(Op.UnaryOperation("atan",atan, nil))
+        learnOp(Op.UnaryOperation("exp",exp, nil))
+        learnOp(Op.UnaryOperation("ln",log, nil))
+        learnOp(Op.UnaryOperation("2log",log2, nil))
+        learnOp(Op.UnaryOperation("inv", {1.0 / $0}, nil))
+        learnOp(Op.UnaryOperation("+⁄-", {-$0}, nil))
         learnOp(Op.NullaryOperation("π") {M_PI})
         learnOp(Op.NullaryOperation("e") {M_E})
     }
@@ -138,65 +152,73 @@ class CalculatorBrain {
     }
     
     // recursive helper function for public evaluate method below
-    private func evaluate(ops: [Op]) -> (result: Double?, remainingOps: [Op]) {
+    private func evaluate(ops: [Op]) -> (value: Double?, error: String, remainingOps: [Op]) {
         
         if !ops.isEmpty {
             var remainingOps = ops
             let op = remainingOps.removeLast()
             switch op {
             case .Operand(let operand):
-                return (operand, remainingOps)
+                return (operand, " ", remainingOps)
             case .Variable(let variable):
-                return (variableValues[variable], remainingOps)
+                if let varValue = variableValues[variable] {
+                    return (varValue, " ", remainingOps)
+                } else {
+                    return (nil, "Error: Variable \(variable) not set", remainingOps)
+                }
             case .NullaryOperation(_, let operation):
-                return (operation(), remainingOps)
-            case .UnaryOperation(_, let operation):
+                return (operation(), " ", remainingOps)
+            case .UnaryOperation(_, let operation, let errorTest):
                 let operandEvaluation = evaluate(remainingOps)
-                if let operand = operandEvaluation.result {
-                    return (operation(operand), operandEvaluation.remainingOps)
+                if let operand = operandEvaluation.value {
+                    if let errMessage = errorTest?(operand) {
+                        return (nil, errMessage, remainingOps)
+                    } else {
+                        return (operation(operand), " ", operandEvaluation.remainingOps)
                     }
-            case .BinaryOperation(_, let operation, _):
+                }
+            case .BinaryOperation(_, let operation, _, let errorTest):
                 let op1Evaluation = evaluate(remainingOps)
-                if let operand1 = op1Evaluation.result {
+                if let operand1 = op1Evaluation.value {
                     let op2Evaluation = evaluate(op1Evaluation.remainingOps)
-                    if let operand2 = op2Evaluation.result {
-                        return (operation(operand1, operand2), op2Evaluation.remainingOps)
+                    if let operand2 = op2Evaluation.value {
+                        if let errMessage = errorTest?(operand1, operand2) {
+                            return (nil, errMessage, remainingOps)
+                        } else {
+                            return (operation(operand1, operand2), " ", op2Evaluation.remainingOps)
+                        }
                     }
                 }
             }
         }
-        return (nil, ops)
+        return (nil, "Error: Too few operands", ops)
     }
     
-    func evaluate() -> Double? {
-        let (result, remainder) = evaluate(opStack)
+    func evaluate() -> (value: Double?, error: String) {
+        let (value, error, remainder) = evaluate(opStack)
         // println("\(opStack) = \(result) with \(remainder) left over")
         // println(description)
-        return result
+        return (value, error)
     }
     
-    func pushOperand(operand: Double) -> Double? {
+    func pushOperand(operand: Double) {
         opStack.append(Op.Operand(operand))
-        return evaluate()
     }
     
-    func pushOperand(symbol: String) -> Double? {
+    func pushOperand(symbol: String) {
         opStack.append(Op.Variable(symbol))
-        return evaluate()
     }
     
-    func performOperation(symbol: String) -> Double? {
+    func performOperation(symbol: String) {
         if let operation = knownOps[symbol] {
             opStack.append(operation)
         }
-        return evaluate()
     }
     
-    func popStack() -> Double? {
+    func popStack() {
         if !opStack.isEmpty {
             opStack.removeLast()
         }
-        return evaluate()
     }
 }
 

@@ -13,9 +13,36 @@ class ViewController: UIViewController {
     @IBOutlet weak var display: UILabel!
     @IBOutlet weak var stackDisplay: UILabel!
     
+    var displayResult: (value: Double?, error: String) = (nil, " ")
+    
     var userIsTyping = false
     
     var brain = CalculatorBrain()
+    
+    // computed property displayValue mirroring UILabel display.text
+    var displayValue: Double? {
+        get {
+            // set formatter to use US format (dot not comma)
+            var formatter = NSNumberFormatter()
+            formatter.locale = NSLocale(localeIdentifier:  "en_US")
+            // nsNumber is nil if display.text does not contain number
+            let nsNumber = formatter.numberFromString(display.text!)
+            if let actualNSNumber = nsNumber {
+                return actualNSNumber.doubleValue
+            } else {
+                return nil
+            }
+        }
+        set {
+            if let actualNewValue = newValue {
+                display.text = "\(actualNewValue)"
+            } else {
+                display.text = displayResult.error
+            }
+            userIsTyping = false
+            stackDisplay.text = brain.description
+        }
+    }
     
     @IBAction func appendDigit(sender: UIButton) {
         let digit = sender.currentTitle!
@@ -35,7 +62,8 @@ class ViewController: UIViewController {
             enter()
         }
         if let operation = sender.currentTitle {
-            displayValue = brain.performOperation(operation)
+            brain.performOperation(operation)
+            updateValue()
         }
     }
     
@@ -69,53 +97,35 @@ class ViewController: UIViewController {
             display.text = dropLast(display.text!)
             if countElements(display.text!) == 0 {
                 userIsTyping = false
-                displayValue = brain.evaluate()
+                updateValue()
             }
         } else {
-            displayValue = brain.popStack()
+            brain.popStack()
+            updateValue()
         }
     }
     
     @IBAction func setM() {
         userIsTyping = false
         brain.variableValues["M"] = displayValue
-        displayValue = brain.evaluate()
+        updateValue()
     }
     
     @IBAction func pushM() {
         userIsTyping = false
-        displayValue = brain.pushOperand("M")
+        brain.pushOperand("M")
+        updateValue()
     }
     
     @IBAction func enter() {
         userIsTyping = false
-        displayValue = brain.pushOperand(displayValue!)
+        brain.pushOperand(displayValue!)
+        updateValue()
     }
 
-    // computed value for UILabel display.text
-    var displayValue: Double? {
-        get {
-            // set formatter to use US format (dot not comma)
-            var formatter = NSNumberFormatter()
-            formatter.locale = NSLocale(localeIdentifier:  "en_US")
-            // nsNumber is nil if display.text does not contain number
-            let nsNumber = formatter.numberFromString(display.text!)
-            if let actualNSNumber = nsNumber {
-                return actualNSNumber.doubleValue
-            } else {
-            return nil
-            }
-        }
-        set {
-            if let actualNewValue = newValue {
-                display.text = "\(actualNewValue)"
-                stackDisplay.text = brain.description
-            } else {
-                display.text = " "
-                stackDisplay.text = " "
-            }
-            userIsTyping = false
-        }
+    private func updateValue() {
+        displayResult = brain.evaluate()
+        displayValue = displayResult.value
     }
 }
 
