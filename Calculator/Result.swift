@@ -8,20 +8,17 @@
 
 import Foundation
 
-/*
-// enum with either result (of evaluation) or error message
-enum Result<T> {
-    case Value(T)
+// Stack value or error message
+enum Result: Printable {
+    case Value(Double)
     case Error(String)
-
-    // executes function f on result or just passes on the error message
-    func mapping<P>(f: T -> P) -> Result<P> {
+    
+    var description: String {
         switch self {
-        case Value(let value):
-            return .Value(f(value))
-        case Error(let errMessage):
-            return .Error(errMessage)
+        case .Value(let value):
+            return "\(value)"
+        case .Error(let errmsg):
+            return errmsg
         }
     }
 }
-*/

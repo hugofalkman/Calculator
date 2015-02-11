@@ -13,7 +13,16 @@ class ViewController: UIViewController {
     @IBOutlet weak var display: UILabel!
     @IBOutlet weak var stackDisplay: UILabel!
     
-    var displayResult: (value: Double?, error: String) = (nil, " ")
+    var displayResult: Result = Result.Value(0.0) {
+        didSet {
+            switch displayResult {
+            case .Value(let value):
+                displayValue = value
+            case .Error:
+                displayValue = nil
+            }
+        }
+    }
     
     var userIsTyping = false
     
@@ -34,11 +43,9 @@ class ViewController: UIViewController {
             }
         }
         set {
-            if let actualNewValue = newValue {
-                display.text = "\(actualNewValue)"
-            } else {
-                display.text = displayResult.error
-            }
+            // using the description variable of the 
+            // displayResult enum adhering to the printable protocol
+            display.text = displayResult.description
             userIsTyping = false
             stackDisplay.text = brain.description
         }
@@ -63,7 +70,7 @@ class ViewController: UIViewController {
         }
         if let operation = sender.currentTitle {
             brain.performOperation(operation)
-            updateValue()
+            displayResult = brain.evaluate()
         }
     }
     
@@ -87,6 +94,7 @@ class ViewController: UIViewController {
 
     @IBAction func clear() {
         display.text = "0"
+        displayResult = Result.Value(0.0)
         stackDisplay.text = " "
         userIsTyping = false
         brain = CalculatorBrain()
@@ -97,35 +105,30 @@ class ViewController: UIViewController {
             display.text = dropLast(display.text!)
             if countElements(display.text!) == 0 {
                 userIsTyping = false
-                updateValue()
+                displayResult = brain.evaluate()
             }
         } else {
             brain.popStack()
-            updateValue()
+            displayResult = brain.evaluate()
         }
     }
     
     @IBAction func setM() {
         userIsTyping = false
         brain.variableValues["M"] = displayValue
-        updateValue()
+        displayResult = brain.evaluate()
     }
     
     @IBAction func pushM() {
         userIsTyping = false
         brain.pushOperand("M")
-        updateValue()
+        displayResult = brain.evaluate()
     }
     
     @IBAction func enter() {
         userIsTyping = false
         brain.pushOperand(displayValue!)
-        updateValue()
-    }
-
-    private func updateValue() {
         displayResult = brain.evaluate()
-        displayValue = displayResult.value
     }
 }
 

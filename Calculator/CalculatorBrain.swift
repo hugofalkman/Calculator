@@ -10,6 +10,7 @@ import Foundation
 
 class CalculatorBrain {
     
+    // Type for the elements of the opStacl
     private enum Op: Printable {
         case Operand(Double)
         case Variable(String)
@@ -194,11 +195,13 @@ class CalculatorBrain {
         return (nil, "Error: Too few operands", ops)
     }
     
-    func evaluate() -> (value: Double?, error: String) {
-        let (value, error, remainder) = evaluate(opStack)
-        // println("\(opStack) = \(result) with \(remainder) left over")
-        // println(description)
-        return (value, error)
+    func evaluate() -> Result {
+        let (value, error, _) = evaluate(opStack)
+        if let actual = value {
+            return Result.Value(actual)
+        } else {
+            return Result.Error(error)
+        }
     }
     
     func pushOperand(operand: Double) {
