@@ -13,44 +13,31 @@ class ViewController: UIViewController {
     @IBOutlet weak var display: UILabel!
     @IBOutlet weak var stackDisplay: UILabel!
     
-    var displayResult: Result = Result.Value(0.0) {
-        didSet {
-            switch displayResult {
-            case .Value(let value):
-                displayValue = value
-            case .Error:
-                displayValue = nil
-            }
-        }
-    }
-    
     var userIsTyping = false
     
     var brain = CalculatorBrain()
     
-    // computed property displayValue mirroring UILabel display.text
-    var displayValue: Double? {
-        get {
-            // set formatter to use US format (dot not comma)
-            var formatter = NSNumberFormatter()
-            formatter.locale = NSLocale(localeIdentifier:  "en_US")
-            // nsNumber is nil if display.text does not contain number
-            let nsNumber = formatter.numberFromString(display.text!)
-            if let actualNSNumber = nsNumber {
-                return actualNSNumber.doubleValue
-            } else {
-                return nil
-            }
-        }
-        set {
-            // using the description variable of the 
-            // displayResult enum adhering to the printable protocol
+    // property storing the evaluation results from the brain model
+    // its Result type defined by enum in the brain model
+    var displayResult: CalculatorBrain.Result = .Value(0.0) {
+        // also updates the two IBOutlet text fields
+        didSet {
+            // using the description property of the
+            // Result enum adhering to the printable protocol
             display.text = displayResult.description
             userIsTyping = false
             stackDisplay.text = brain.description
         }
     }
     
+    // computed read-only property mirroring UILabel display.text
+    var displayValue: Double {
+        // set formatter to use US format (dot not comma)
+        var formatter = NSNumberFormatter()
+        formatter.locale = NSLocale(localeIdentifier:  "en_US")
+        return formatter.numberFromString(display.text!)!.doubleValue
+    }
+
     @IBAction func appendDigit(sender: UIButton) {
         let digit = sender.currentTitle!
         if userIsTyping {
@@ -93,11 +80,10 @@ class ViewController: UIViewController {
     }
 
     @IBAction func clear() {
+        brain = CalculatorBrain()
         display.text = "0"
-        displayResult = Result.Value(0.0)
         stackDisplay.text = " "
         userIsTyping = false
-        brain = CalculatorBrain()
     }
     
     @IBAction func backspace() {
@@ -127,7 +113,7 @@ class ViewController: UIViewController {
     
     @IBAction func enter() {
         userIsTyping = false
-        brain.pushOperand(displayValue!)
+        brain.pushOperand(displayValue)
         displayResult = brain.evaluate()
     }
 }
