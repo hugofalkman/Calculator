@@ -68,6 +68,31 @@ class CalculatorBrain {
     
     private var knownOps = [String: Op]()
     
+    // computed property for storing and resetting the opStack as a Property List
+    var program: AnyObject { // guaranteed to be a PropertyList
+        get {
+            return opStack.map {$0.description}
+        }
+        set {
+            if let opSymbols = newValue as? Array<String> {
+                var newOpStack = [Op]()
+                for opSymbol in opSymbols {
+                    if let op = knownOps[opSymbol] {
+                        newOpStack.append(op)
+                    } else {
+                        var formatter = NSNumberFormatter()
+                        formatter.locale = NSLocale(localeIdentifier:  "en_US")
+                        if let operand = formatter.numberFromString(opSymbol)?.doubleValue {
+                            newOpStack.append(.Operand(operand))
+                        }
+                    }
+                }
+                opStack = newOpStack
+            }
+        }
+    }
+
+    
     //  public property to allow setting of variables
     var variableValues = [String: Double]()
 
