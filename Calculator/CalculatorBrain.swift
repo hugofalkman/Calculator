@@ -25,7 +25,6 @@ class CalculatorBrain {
             }
         }
     }
-
     
     // Type for the elements of the opStack
     private enum Op: Printable {
@@ -68,7 +67,7 @@ class CalculatorBrain {
     
     private var knownOps = [String: Op]()
     
-    // computed property for storing and resetting the opStack as a Property List
+    // computed property for saving and resetting the opStack as a Property List
     var program: AnyObject { // guaranteed to be a PropertyList
         get {
             return opStack.map {$0.description}
@@ -91,7 +90,6 @@ class CalculatorBrain {
             }
         }
     }
-
     
     //  public property to allow setting of variables
     var variableValues = [String: Double]()
