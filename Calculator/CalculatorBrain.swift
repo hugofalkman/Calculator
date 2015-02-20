@@ -67,6 +67,9 @@ class CalculatorBrain {
     
     private var knownOps = [String: Op]()
     
+    //  public property to allow setting of variables
+    var variableValues = [String: Double]()
+    
     // computed property for saving and resetting the opStack as a Property List
     var program: AnyObject { // guaranteed to be a PropertyList
         get {
@@ -79,6 +82,9 @@ class CalculatorBrain {
                     if let op = knownOps[opSymbol] {
                         newOpStack.append(op)
                     } else {
+                        if let _ = variableValues[opSymbol] {
+                            newOpStack.append(.Variable(opSymbol))
+                        }
                         var formatter = NSNumberFormatter()
                         formatter.locale = NSLocale(localeIdentifier:  "en_US")
                         if let operand = formatter.numberFromString(opSymbol)?.doubleValue {
@@ -91,9 +97,6 @@ class CalculatorBrain {
         }
     }
     
-    //  public property to allow setting of variables
-    var variableValues = [String: Double]()
-
     // description of opStack passed to UI by the View Controller
     // computed read only property (get only)
     var description: String {
