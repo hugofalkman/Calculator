@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  CalculatorViewController.swift
 //  Calculator
 //
 //  Created by H Hugo Falkman on 2015-01-27.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class CalculatorViewController: UIViewController {
 
     @IBOutlet weak var display: UILabel!
     @IBOutlet weak var stackDisplay: UILabel!
@@ -110,6 +110,11 @@ class ViewController: UIViewController {
         brain.pushOperand("M")
         displayResult = brain.evaluate()
     }
+    
+    @IBAction func graph() {
+        
+    }
+    
     
     @IBAction func enter() {
         userIsTyping = false
