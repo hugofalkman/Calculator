@@ -111,15 +111,18 @@ class CalculatorViewController: UIViewController {
         displayResult = brain.evaluate()
     }
     
-    @IBAction func graph() {
-        
-    }
-    
-    
     @IBAction func enter() {
         userIsTyping = false
         brain.pushOperand(displayValue)
         displayResult = brain.evaluate()
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if let gvc = segue.destinationViewController as? GraphViewController {
+            if let _ = segue.identifier {
+                
+            }
+        }
     }
 }
 
