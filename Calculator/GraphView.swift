@@ -24,13 +24,8 @@ class GraphView: UIView {
         get {return convertPoint(center, fromView: superview)}
         set {setNeedsDisplay()}
     }
+    @IBInspectable
     var scale: CGFloat = 25 {didSet {setNeedsDisplay()}}
-    
-    func viewDidLoad() {
-        axesdrawer.contentScaleFactor = self.contentScaleFactor
-        let test: CGRect = bounds
-        
-    }
     
     override func drawRect(rect: CGRect) {
         var drawBounds = bounds
