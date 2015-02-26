@@ -704,6 +704,9 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="dLH-Pf-pDg"/>
+                    <connections>
+                        <outlet property="graphView" destination="rgl-J5-Na2" id="IX5-0o-tzH"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ksM-BN-444" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

@@ -20,20 +20,55 @@ class GraphView: UIView {
     
     let axesdrawer = AxesDrawer(color: UIColor.blackColor())
     
-    var origo: CGPoint {
-        get {return convertPoint(center, fromView: superview)}
-        set {setNeedsDisplay()}
+    var origo: CGPoint? {didSet {setNeedsDisplay()}
     }
+    
     @IBInspectable
     var scale: CGFloat = 25 {didSet {setNeedsDisplay()}}
     
+    func scaleUp(gesture: UIPinchGestureRecognizer) {
+        if gesture.state == .Changed {
+            scale *= 2 - gesture.scale
+            gesture.scale = 1
+        }
+    }
+    
+    func moveOrigin(gesture: UIPanGestureRecognizer) {
+        switch gesture.state {
+        case .Ended: fallthrough
+        case .Changed:
+            let translation = gesture.translationInView(self)
+            if translation != CGPointZero {
+                origo!.x += translation.x
+                origo!.y += translation.y
+                gesture.setTranslation(CGPointZero, inView: self)
+            }
+        default: break
+        }
+    }
+    
+    func setOrigin(gesture: UITapGestureRecognizer) {
+        gesture.numberOfTapsRequired = 2
+        if gesture.state == .Ended {
+            origo = gesture.locationInView(self)
+        }
+    }
+    
+    override var bounds: CGRect {
+        didSet {
+            origo = convertPoint(center, fromView: superview)
+        }
+    }
+    
     override func drawRect(rect: CGRect) {
+        
         var drawBounds = bounds
         drawBounds.size.width *= scaleSize
         drawBounds.size.height *= scaleSize
         drawBounds.origin.x += drawBounds.size.width * scaleOrigin
         drawBounds.origin.y += drawBounds.size.height * scaleOrigin
-        axesdrawer.drawAxesInRect(drawBounds, origin: origo, pointsPerUnit: scale)
+        
+        axesdrawer.drawAxesInRect(drawBounds, origin: origo!, pointsPerUnit: scale)
     }
 }
 
