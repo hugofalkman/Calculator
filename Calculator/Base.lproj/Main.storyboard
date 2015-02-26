@@ -344,7 +344,7 @@
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
                                 </state>
                                 <connections>
-                                    <segue destination="0WT-KT-FoG" kind="showDetail" identifier="showGraph" id="Bf3-DU-Ak3"/>
+                                    <segue destination="2E6-td-gHI" kind="showDetail" identifier="showGraph" id="Bf3-DU-Ak3"/>
                                 </connections>
                             </button>
                             <button opaque="NO" alpha="0.79999999999999982" contentMode="redraw" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VA9-g3-8Fz">
@@ -666,7 +666,7 @@
                 <splitViewController id="rAZ-Vt-9Iz" sceneMemberID="viewController">
                     <connections>
                         <segue destination="dUz-ht-Usn" kind="relationship" relationship="masterViewController" id="uKv-Iu-TFN"/>
-                        <segue destination="0WT-KT-FoG" kind="relationship" relationship="detailViewController" id="JDG-ZQ-2Cr"/>
+                        <segue destination="2E6-td-gHI" kind="relationship" relationship="detailViewController" id="JDG-ZQ-2Cr"/>
                     </connections>
                 </splitViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fVR-H5-S7g" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -685,23 +685,24 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="rgl-J5-Na2" customClass="GraphView" customModule="Calculator" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                            <view contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="rgl-J5-Na2" customClass="GraphView" customModule="Calculator" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="rgl-J5-Na2" firstAttribute="top" secondItem="e6m-yb-iRG" secondAttribute="bottom" id="7UX-ir-Vqw"/>
                             <constraint firstItem="rgl-J5-Na2" firstAttribute="leading" secondItem="goi-mf-VSg" secondAttribute="leading" id="G74-vh-AXC"/>
-                            <constraint firstItem="rgl-J5-Na2" firstAttribute="top" secondItem="goi-mf-VSg" secondAttribute="top" id="Hc2-Fm-AW6"/>
                             <constraint firstItem="rgl-J5-Na2" firstAttribute="bottom" secondItem="kLw-KL-1nG" secondAttribute="top" id="m8y-2q-UKO"/>
                             <constraint firstAttribute="trailing" secondItem="rgl-J5-Na2" secondAttribute="trailing" id="u6D-IU-bhq"/>
                         </constraints>
                     </view>
+                    <navigationItem key="navigationItem" id="dLH-Pf-pDg"/>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ksM-BN-444" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1329" y="67"/>
+            <point key="canvasLocation" x="-683" y="82"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="wt4-hi-4k3">
@@ -721,8 +722,26 @@
             </objects>
             <point key="canvasLocation" x="-1329" y="-642"/>
         </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="QlY-di-Q8A">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="2E6-td-gHI" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="Apn-1r-K3b">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="0WT-KT-FoG" kind="relationship" relationship="rootViewController" id="tcl-c5-Xj5"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="BKC-HT-4W8" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1329" y="67"/>
+        </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="Bf3-DU-Ak3"/>
+        <segue reference="JDG-ZQ-2Cr"/>
     </inferredMetricsTieBreakers>
 </document>
