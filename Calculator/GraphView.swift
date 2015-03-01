@@ -11,8 +11,6 @@ import UIKit
 @IBDesignable
 class GraphView: UIView {
     
-    override var contentScaleFactor: CGFloat {didSet {setNeedsDisplay()}}
-    
     var scaleSize: CGFloat = 0.9 {didSet {setNeedsDisplay()}}
     var scaleOrigin: CGFloat {
         return ((1 - scaleSize) / 2)
@@ -20,8 +18,7 @@ class GraphView: UIView {
     
     let axesdrawer = AxesDrawer(color: UIColor.blackColor())
     
-    var origo: CGPoint? {didSet {setNeedsDisplay()}
-    }
+    var origo: CGPoint? {didSet {setNeedsDisplay()}}
     
     @IBInspectable
     var scale: CGFloat = 25 {didSet {setNeedsDisplay()}}
@@ -68,6 +65,9 @@ class GraphView: UIView {
         drawBounds.origin.x += drawBounds.size.width * scaleOrigin
         drawBounds.origin.y += drawBounds.size.height * scaleOrigin
         
+        origo = origo ?? convertPoint(center, fromView: superview)
+        
+        axesdrawer.contentScaleFactor = contentScaleFactor
         axesdrawer.drawAxesInRect(drawBounds, origin: origo!, pointsPerUnit: scale)
     }
 }
