@@ -17,4 +17,21 @@ class GraphViewController: UIViewController
             graphView.addGestureRecognizer(UITapGestureRecognizer(target: graphView, action: "setOrigin:"))
         }
     }
+    
+    private var brain = CalculatorBrain()
+    
+    // property list for setting calculator brain opstack. set from calculator view controller
+    var brainPList: AnyObject? {
+        didSet {
+            brain.variableValues["M"] = 0
+            brain.program = brainPList!
+            title = brain.description.componentsSeparatedByString(",").last ?? " "
+            if countElements(title!) > 1 {title = "y = " + dropLast(dropLast(title!))}
+            updateUI()
+        }
+    }
+    
+    func updateUI() {
+        graphView?.setNeedsDisplay()
+    }
 }

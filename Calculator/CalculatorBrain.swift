@@ -84,11 +84,12 @@ class CalculatorBrain {
                     } else {
                         if let _ = variableValues[opSymbol] {
                             newOpStack.append(.Variable(opSymbol))
-                        }
-                        var formatter = NSNumberFormatter()
-                        formatter.locale = NSLocale(localeIdentifier:  "en_US")
-                        if let operand = formatter.numberFromString(opSymbol)?.doubleValue {
-                            newOpStack.append(.Operand(operand))
+                        } else {
+                            var formatter = NSNumberFormatter()
+                            formatter.locale = NSLocale(localeIdentifier:  "en_US")
+                            if let operand = formatter.numberFromString(opSymbol)?.doubleValue {
+                                newOpStack.append(.Operand(operand))
+                            }
                         }
                     }
                 }

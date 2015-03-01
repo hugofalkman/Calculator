@@ -15,7 +15,7 @@ class CalculatorViewController: UIViewController {
     
     var userIsTyping = false
     
-    var brain = CalculatorBrain()
+    private var brain = CalculatorBrain()
     
     // property storing the evaluation results from the brain model
     // its Result type defined by enum in the brain model
@@ -118,9 +118,13 @@ class CalculatorViewController: UIViewController {
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if let gvc = segue.destinationViewController as? GraphViewController {
+        var destination = segue.destinationViewController as? UIViewController
+        if let navCon = destination as? UINavigationController {
+            destination = navCon.visibleViewController
+        }
+        if let gvc = destination as? GraphViewController {
             if let _ = segue.identifier {
-                
+                gvc.brainPList = brain.program
             }
         }
     }
