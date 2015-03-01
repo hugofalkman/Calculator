@@ -82,11 +82,6 @@ class GraphView: UIView {
         axesdrawer.contentScaleFactor = contentScaleFactor
         axesdrawer.drawAxesInRect(drawBounds, origin: origo!, pointsPerUnit: scale)
         drawCurveInRect(drawBounds, origin: origo!, pointsPerUnit: scale)
-        
-        // let x: CGFloat = 0.0
-        // let y = dataSource?.yForX(self, x: x) ?? 0.0
-        
-        
     }
     
     func drawCurveInRect(bounds: CGRect, origin: CGPoint, pointsPerUnit: CGFloat) {

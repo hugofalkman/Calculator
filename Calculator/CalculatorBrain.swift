@@ -254,7 +254,7 @@ class CalculatorBrain {
         if !opStack.isEmpty {
         return evaluate(opStack).result
         }
-        return .Value(0)
+        return .Error("0")
     }
     
     func pushOperand(operand: Double) {
