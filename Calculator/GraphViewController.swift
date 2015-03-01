@@ -8,15 +8,20 @@
 
 import UIKit
 
-class GraphViewController: UIViewController
+class GraphViewController: UIViewController, GraphViewDataSource
 {
     @IBOutlet weak var graphView: GraphView! {
         didSet {
+            graphView.dataSource = self
             graphView.addGestureRecognizer(UIPinchGestureRecognizer(target: graphView, action: "scaleUp:"))
             graphView.addGestureRecognizer(UIPanGestureRecognizer(target: graphView, action: "moveOrigin:"))
             graphView.addGestureRecognizer(UITapGestureRecognizer(target: graphView, action: "setOrigin:"))
         }
     }
+    
+    // property storing the evaluation results from the brain model
+    // its Result type defined by enum in the brain model
+    var displayResult: CalculatorBrain.Result = .Error("")
     
     private var brain = CalculatorBrain()
     
@@ -34,4 +39,16 @@ class GraphViewController: UIViewController
     func updateUI() {
         graphView?.setNeedsDisplay()
     }
+    
+    func yForX(sender: GraphView, x: CGFloat) -> CGFloat? {
+        brain.variableValues["M"] = Double(x)
+        displayResult = brain.evaluate()
+        switch displayResult {
+        case .Value(let y): return CGFloat(y)
+        case .Error: return nil
+        }
+    }
 }
+
+
+
