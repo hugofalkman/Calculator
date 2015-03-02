@@ -61,7 +61,9 @@ class GraphView: UIView {
     
     override var bounds: CGRect {
         didSet {
-            origo = convertPoint(center, fromView: superview)
+            // keep origo's position relative center 
+            origo?.x += bounds.midX - oldValue.midX
+            origo?.y += bounds.midY - oldValue.midY
         }
     }
     
