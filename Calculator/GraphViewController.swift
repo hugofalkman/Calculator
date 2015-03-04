@@ -13,8 +13,6 @@ class GraphViewController: UIViewController, GraphViewDataSource
     @IBOutlet weak var graphView: GraphView! {
         didSet {
             graphView.dataSource = self
-            graphView.addGestureRecognizer(UIPinchGestureRecognizer(target: graphView, action: "scaleUp:"))
-            graphView.addGestureRecognizer(UIPanGestureRecognizer(target: graphView, action: "moveOrigin:"))
             graphView.addGestureRecognizer(UITapGestureRecognizer(target: graphView, action: "setOrigin:"))
         }
     }
@@ -40,6 +38,28 @@ class GraphViewController: UIViewController, GraphViewDataSource
         graphView?.setNeedsDisplay()
     }
     
+    @IBAction func scaleUp(gesture: UIPinchGestureRecognizer) {
+        if gesture.state == .Changed {
+            scale *= gesture.scale
+            gesture.scale = 1
+        }
+    }
+
+    @IBAction func moveOrigin(gesture: UIPanGestureRecognizer) {
+        switch gesture.state {
+        case .Ended: fallthrough
+        case .Changed:
+            let translation = gesture.translationInView(graphView)
+            if translation != CGPointZero {
+                origoRelCenter.x += translation.x
+                origoRelCenter.y += translation.y
+                gesture.setTranslation(CGPointZero, inView: graphView)
+            }
+        default: break
+        }
+    }
+    
+    // delegate method and properties
     func yForX(sender: GraphView, x: CGFloat) -> CGFloat? {
         brain.variableValues["M"] = Double(x)
         displayResult = brain.evaluate()
@@ -48,6 +68,8 @@ class GraphViewController: UIViewController, GraphViewDataSource
         case .Error: return nil
         }
     }
+    var scale: CGFloat = 100.0 {didSet{graphView?.setNeedsDisplay()}}
+    var origoRelCenter: CGPoint = CGPoint(x: 100, y: 0) {didSet{graphView?.setNeedsDisplay()}}
 }
 
 

@@ -10,6 +10,8 @@ import UIKit
 
 protocol GraphViewDataSource: class {
     func yForX(sender: GraphView, x: CGFloat) -> CGFloat?
+    var origoRelCenter: CGPoint {get set}
+    var scale: CGFloat {get}
 }
 
 @IBDesignable
@@ -24,46 +26,19 @@ class GraphView: UIView {
     let axesdrawer = AxesDrawer(color: UIColor.blackColor())
     
     @IBInspectable
-    var scale: CGFloat = 25 {didSet {setNeedsDisplay()}}
+    var scale: CGFloat = 25
     @IBInspectable
     var color: UIColor = UIColor.blueColor() {didSet {setNeedsDisplay()}}
     @IBInspectable
     var lineWidth: CGFloat = 1.0 {didSet {setNeedsDisplay()}}
-    var origo: CGPoint? {didSet {setNeedsDisplay()}}
-    
-    func scaleUp(gesture: UIPinchGestureRecognizer) {
-        if gesture.state == .Changed {
-            scale *= gesture.scale
-            gesture.scale = 1
-        }
-    }
-    
-    func moveOrigin(gesture: UIPanGestureRecognizer) {
-        switch gesture.state {
-        case .Ended: fallthrough
-        case .Changed:
-            let translation = gesture.translationInView(self)
-            if translation != CGPointZero {
-                origo!.x += translation.x
-                origo!.y += translation.y
-                gesture.setTranslation(CGPointZero, inView: self)
-            }
-        default: break
-        }
-    }
+    var origo: CGPoint = CGPointZero
     
     func setOrigin(gesture: UITapGestureRecognizer) {
         gesture.numberOfTapsRequired = 2
         if gesture.state == .Ended {
-            origo = gesture.locationInView(self)
-        }
-    }
-    
-    override var bounds: CGRect {
-        didSet {
-            // keep origo's position relative center 
-            origo?.x += bounds.midX - oldValue.midX
-            origo?.y += bounds.midY - oldValue.midY
+            let orig = gesture.locationInView(self)
+            dataSource?.origoRelCenter.x = orig.x - bounds.midX
+            dataSource?.origoRelCenter.y = orig.y - bounds.midY
         }
     }
     
@@ -78,12 +53,15 @@ class GraphView: UIView {
         drawBounds.origin.x += drawBounds.size.width * scaleOrigin
         drawBounds.origin.y += drawBounds.size.height * scaleOrigin
         
-        // needed for the IBDesignable not to time out
-        origo = origo ?? convertPoint(center, fromView: superview)
+        // setting origo and scale from the delegate
+        scale = dataSource?.scale ?? scale
+        let orig = dataSource?.origoRelCenter ?? CGPointZero
+            origo.x = orig.x + bounds.midX
+            origo.y = orig.y + bounds.midY
         
         axesdrawer.contentScaleFactor = contentScaleFactor
-        axesdrawer.drawAxesInRect(drawBounds, origin: origo!, pointsPerUnit: scale)
-        drawCurveInRect(drawBounds, origin: origo!, pointsPerUnit: scale)
+        axesdrawer.drawAxesInRect(drawBounds, origin: origo, pointsPerUnit: scale)
+        drawCurveInRect(drawBounds, origin: origo, pointsPerUnit: scale)
     }
     
     func drawCurveInRect(bounds: CGRect, origin: CGPoint, pointsPerUnit: CGFloat) {
