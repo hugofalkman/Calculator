@@ -8,8 +8,12 @@
 
 import UIKit
 
-class CalculatorViewController: UIViewController {
+class CalculatorViewController: UIViewController, GraphViewControllerDataSource {
 
+    private struct Constants {
+        static let scaleDefault: CGFloat = 20.0
+    }
+    
     @IBOutlet weak var display: UILabel!
     @IBOutlet weak var stackDisplay: UILabel!
     
@@ -84,6 +88,8 @@ class CalculatorViewController: UIViewController {
         display.text = "0"
         stackDisplay.text = " "
         userIsTyping = false
+        scale = Constants.scaleDefault
+        origoRelCenter = CGPointZero
     }
     
     @IBAction func backspace() {
@@ -124,10 +130,17 @@ class CalculatorViewController: UIViewController {
         }
         if let gvc = destination as? GraphViewController {
             if let _ = segue.identifier {
+                gvc.dataSource = self
                 gvc.brainPList = brain.program
+                gvc.scale = scale
+                gvc.origoRelCenter = origoRelCenter
             }
         }
     }
+    
+    // delegate properties
+    var scale: CGFloat = Constants.scaleDefault
+    var origoRelCenter: CGPoint = CGPointZero
 }
 
 

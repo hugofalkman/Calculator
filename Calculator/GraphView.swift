@@ -33,6 +33,7 @@ class GraphView: UIView {
     var lineWidth: CGFloat = 1.0 {didSet {setNeedsDisplay()}}
     var origo: CGPoint = CGPointZero
     
+    // gesture sets relative origo to center in delegate
     func setOrigin(gesture: UITapGestureRecognizer) {
         gesture.numberOfTapsRequired = 2
         if gesture.state == .Ended {

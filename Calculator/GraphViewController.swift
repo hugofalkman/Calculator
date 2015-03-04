@@ -8,6 +8,11 @@
 
 import UIKit
 
+protocol GraphViewControllerDataSource: class {
+    var origoRelCenter: CGPoint {get set}
+    var scale: CGFloat {get set}
+}
+
 class GraphViewController: UIViewController, GraphViewDataSource
 {
     @IBOutlet weak var graphView: GraphView! {
@@ -22,6 +27,7 @@ class GraphViewController: UIViewController, GraphViewDataSource
     var displayResult: CalculatorBrain.Result = .Error("")
     
     private var brain = CalculatorBrain()
+    weak var dataSource: GraphViewControllerDataSource?
     
     // property list for setting calculator brain opstack. set from calculator view controller
     var brainPList: AnyObject? {
@@ -68,8 +74,13 @@ class GraphViewController: UIViewController, GraphViewDataSource
         case .Error: return nil
         }
     }
-    var scale: CGFloat = 100.0 {didSet{graphView?.setNeedsDisplay()}}
-    var origoRelCenter: CGPoint = CGPoint(x: 100, y: 0) {didSet{graphView?.setNeedsDisplay()}}
+    // variables set by gestures that in turn set the corresponding delegate variables
+    var scale: CGFloat = 20.0 {didSet{
+        graphView?.setNeedsDisplay()
+        dataSource?.scale = scale}}
+    var origoRelCenter: CGPoint = CGPointZero {didSet{
+        graphView?.setNeedsDisplay()
+        dataSource?.origoRelCenter = origoRelCenter}}
 }
 
 
