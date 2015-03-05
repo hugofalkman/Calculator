@@ -33,6 +33,12 @@ class GraphView: UIView {
     var lineWidth: CGFloat = 1.0 {didSet {setNeedsDisplay()}}
     var origo: CGPoint = CGPointZero
     
+    // for statistics popover
+    var num: Int = 0
+    var sum: CGFloat = 0
+    var min: CGFloat = 0
+    var max: CGFloat = 0
+    
     // gesture sets relative origo to center in delegate
     func setOrigin(gesture: UITapGestureRecognizer) {
         gesture.numberOfTapsRequired = 2
@@ -72,6 +78,12 @@ class GraphView: UIView {
         var disContinuity = true
         var point = CGPoint()
         
+        // zeroing statistics
+        num = 0
+        sum = 0.0
+        min = 0.0
+        max = 0.0
+        
         for i in 0...Int(bounds.size.width * contentScaleFactor) {
             point.x = bounds.minX + CGFloat(i) / contentScaleFactor
             if let y = dataSource?.yForX(self, x: (point.x - origin.x) / scale) {
@@ -84,11 +96,20 @@ class GraphView: UIView {
                         } else {
                             path.addLineToPoint(point)
                         }
+                        if num == 0 {
+                            min = y
+                            max = y
+                        }
+                        num++
+                        sum += y
+                        if y < min {min = y}
+                        if y > max {max = y}
                     } else {disContinuity = true}
                 } else {disContinuity = true}
             } else {disContinuity = true}
         }
         path.stroke()
+        // println("\(num), \(min), \(Double(sum) / Double(num)), \(max)")
     }
 }
 

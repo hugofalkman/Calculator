@@ -673,10 +673,10 @@
             </objects>
             <point key="canvasLocation" x="-2092" y="-323"/>
         </scene>
-        <!--Graph View Controller-->
+        <!--Stat Graph View Controller-->
         <scene sceneID="H7B-qp-cAy">
             <objects>
-                <viewController id="0WT-KT-FoG" customClass="GraphViewController" customModule="Calculator" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="0WT-KT-FoG" customClass="StatGraphViewController" customModule="Calculator" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="e6m-yb-iRG"/>
                         <viewControllerLayoutGuide type="bottom" id="kLw-KL-1nG"/>
@@ -714,7 +714,15 @@
                             <constraint firstAttribute="trailing" secondItem="rgl-J5-Na2" secondAttribute="trailing" id="u6D-IU-bhq"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" id="dLH-Pf-pDg"/>
+                    <navigationItem key="navigationItem" id="dLH-Pf-pDg">
+                        <barButtonItem key="rightBarButtonItem" title="Statistics" id="djL-to-nBs">
+                            <connections>
+                                <segue destination="GiZ-Wd-Q21" kind="popoverPresentation" identifier="Show Stats" popoverAnchorBarButtonItem="djL-to-nBs" id="PUJ-Af-gHy">
+                                    <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                                </segue>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="graphView" destination="rgl-J5-Na2" id="IX5-0o-tzH"/>
                     </connections>
@@ -732,6 +740,42 @@
                 </panGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="-627" y="67"/>
+        </scene>
+        <!--Text View Controller-->
+        <scene sceneID="gdS-YF-Y7C">
+            <objects>
+                <viewController id="GiZ-Wd-Q21" customClass="TextViewController" customModule="Calculator" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="N4p-kf-odd"/>
+                        <viewControllerLayoutGuide type="bottom" id="gvw-kN-6PJ"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="yri-Dq-gbc">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" editable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TUc-hN-6Vf">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="24"/>
+                                <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                            </textView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="TUc-hN-6Vf" firstAttribute="top" secondItem="yri-Dq-gbc" secondAttribute="top" id="1al-ud-snJ"/>
+                            <constraint firstItem="TUc-hN-6Vf" firstAttribute="leading" secondItem="yri-Dq-gbc" secondAttribute="leading" id="6MX-K5-7Nc"/>
+                            <constraint firstAttribute="trailing" secondItem="TUc-hN-6Vf" secondAttribute="trailing" id="T68-iR-tqh"/>
+                            <constraint firstItem="TUc-hN-6Vf" firstAttribute="bottom" secondItem="gvw-kN-6PJ" secondAttribute="top" id="pHF-aH-Ykh"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="textView" destination="TUc-hN-6Vf" id="QDp-qw-ZDY"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="l6c-cP-uDE" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="27" y="67"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="wt4-hi-4k3">

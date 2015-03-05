@@ -138,7 +138,8 @@ class CalculatorViewController: UIViewController, GraphViewControllerDataSource 
         }
     }
     
-    // delegate properties
+    // delegate properties will be kept as long as app remains in background
+    // properties returned to default by clear button
     var scale: CGFloat = Constants.scaleDefault
     var origoRelCenter: CGPoint = CGPointZero
 }
