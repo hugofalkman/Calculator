@@ -35,7 +35,7 @@ class GraphViewController: UIViewController, GraphViewDataSource
             brain.variableValues["M"] = 0
             brain.program = brainPList!
             title = brain.description.componentsSeparatedByString(",").last ?? " "
-            if countElements(title!) > 1 {title = "y = " + dropLast(dropLast(title!))}
+            if count(title!) > 1 {title = "y = " + dropLast(dropLast(title!))}
             updateUI()
         }
     }
