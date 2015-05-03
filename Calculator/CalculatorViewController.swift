@@ -95,7 +95,7 @@ class CalculatorViewController: UIViewController, GraphViewControllerDataSource 
     @IBAction func backspace() {
         if userIsTyping {
             display.text = dropLast(display.text!)
-            if countElements(display.text!) == 0 {
+            if count(display.text!) == 0 {
                 userIsTyping = false
                 displayResult = brain.evaluate()
             }
